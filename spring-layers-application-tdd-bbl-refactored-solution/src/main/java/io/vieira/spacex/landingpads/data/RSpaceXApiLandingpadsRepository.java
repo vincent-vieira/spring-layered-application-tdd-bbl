@@ -18,15 +18,16 @@ public class RSpaceXApiLandingpadsRepository implements LandingpadsRepository {
 
     @Override
     public List<LandingPad> findAll() {
-        final var landingpadsResponse = restTemplate.getForEntity("/landpads", RSpaceXLandingPad[].class);
+        try {
+            final var landingpadsResponse = restTemplate.getForObject("/landpads", RSpaceXLandingPad[].class);
 
-        return switch (landingpadsResponse.getStatusCodeValue()) {
-            case 200 -> Arrays
-                    .stream(Objects.requireNonNull(landingpadsResponse.getBody()))
+            return Arrays
+                    .stream(Objects.requireNonNull(landingpadsResponse))
                     .map(this::convertRSpaceXLandingPadToLandingPad)
                     .toList();
-            default -> throw RSpaceXApiException.fromResponseCode(landingpadsResponse.getStatusCodeValue());
-        };
+        } catch (HttpStatusCodeException httpStatusCodeException) {
+            throw RSpaceXApiException.fromResponseCode(httpStatusCodeException.getRawStatusCode());
+        }
     }
 
     private LandingPad convertRSpaceXLandingPadToLandingPad(RSpaceXLandingPad rSpaceXLandingPad) {

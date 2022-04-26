@@ -1,0 +1,12 @@
+variables:
+  projects: "spring-layers-application-tdd-bbl-refactored-solution"
+
+image: maven:3-openjdk-17-slim
+
+Run Tests:
+  stage: build
+  script: "mvn clean test -B -pl $projects"
+
+Build application:
+  stage: build
+  script: "mvn clean package -B -pl $projects"
