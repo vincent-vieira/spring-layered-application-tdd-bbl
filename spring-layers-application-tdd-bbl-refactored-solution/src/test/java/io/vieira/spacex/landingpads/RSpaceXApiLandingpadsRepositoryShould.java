@@ -76,8 +76,11 @@ class RSpaceXApiLandingpadsRepositoryShould {
 
     @Test
     void shouldPropagateExceptionsWhenFetchingALandingPadGivenItsId() {
-        when(restTemplate.getForObject(anyString(), any())).thenThrow(new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR));
+        when(restTemplate.getForObject(anyString(), any(), anyMap())).thenThrow(new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR));
 
-        assertThrows(RSpaceXApiException.class, () -> landingpadsRepository.findAll());
+        assertThrows(RSpaceXApiException.class, () -> landingpadsRepository.findById("id"));
+
+        verify(restTemplate).getForObject("/landpads/{id}", RSpaceXLandingPad.class, Map.of("id", "id"));
+        verifyNoMoreInteractions(restTemplate);
     }
 }
