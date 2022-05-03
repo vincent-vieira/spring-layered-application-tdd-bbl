@@ -17,7 +17,7 @@ framework Spring.
 
 ## Ce qu'il faut retenir
 
-Spring est un framework qui fêtera ses 20 ans en l'an prochain, en 2023. En 20 ans, l'écosystème Java ainsi que les
+Spring est un framework qui fêtera ses 20 ans l'an prochain, en 2023. En 20 ans, l'écosystème Java ainsi que les
 bonnes pratiques associées à la création d'applications d'entreprise ont beaucoup évolué.
 
 Pour des questions de rétrocompatibilité, Spring laisse toujours le choix : code récent ou code "old-school", ce choix
@@ -27,7 +27,7 @@ devient notre responsabilité en tant que développeurs.
 
 Dans une application monolithique traditionnelle, il peut être tentant de commencer à coder pêle-mêle. Or, respecter une
 décomposition en plusieurs couches est essentielle pour coller
-aux [principes SOLID](https://essential-dev-skills.com/poo/principe-solid).
+aux [principes SOLID](https://www.baeldung.com/solid-principles).
 
 Avoir des couches avec des responsabilités bien définies et séparées les unes des autres, sans superpositions
 permet de respecter un maximum (voire l'intégralité d'entre eux, dans l'état de l'art).
