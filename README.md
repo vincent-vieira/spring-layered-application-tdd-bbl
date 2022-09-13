@@ -90,23 +90,34 @@ Ecrire un test unitaire va donc commencer par créer et substituer les dépendan
 Dans le cas de notre service, le tester en isolation revient à instancier la classe pour obtenir une instance de notre SUT, substituer le repository injecté par un mock et réaliser notre test en 3 étapes : [Arrange, Act, Assert (aussi appelé Given, When, Then)](https://www.qwan.eu/2021/09/02/tdd-given-when-then.html)
 
 Lors de la phase *Arrange* nous allons faire du *stubbing*, qui consiste à configurer notre mock afin qu'il puisse simuler le comportement d'une ou plusieurs sorties indirectes (donc les *méthodes*) en temps normal :
-- Retourner une valeur : `when(repository.findById(any())).thenReturn(Optional.of(sampleLandingPad));`
-- Jeter une exception : `when(restTemplate.getForObject(anyString(), any())).thenThrow(new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR));`
+- Retourner une valeur : 
+```java
+when(repository.findById(any())).thenReturn(Optional.of(sampleLandingPad));
+```
+- Jeter une exception : 
+```java
+when(restTemplate.getForObject(anyString(), any())).thenThrow(new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR));
+```
 
 Lors de la phase *Act*, appeler la méthode de notre SUT que l'on teste, avec les paramètres qui définissent le cas de test.
 
 Lors de la phase *Assert*, nous allons vérifier que la méthode appelée :
-- Retourne bien la bonne valeur : `assertEquals(Optional.of(sampleLandingPad), result);`
-- Ou a jeté la bonne exception : `assertThrows(RSpaceXApiException.class, () -> landingpadsRepository.findAll());`
+- Retourne bien la bonne valeur : 
+```java
+assertEquals(Optional.of(sampleLandingPad), result);
+```
+- Ou a jeté la bonne exception : 
+```java
+assertThrows(RSpaceXApiException.class, () -> landingpadsRepository.findAll());
+```
 
 > Pourquoi tester qu'une valeur récupérée en sortie de notre SUT est identique à notre stubbing ? Cela semble inutile.
-
 
 Car le fait de passer la valeur une couche au-dessus, depuis la dépendance jusqu'à l'appelant sans la modifier est un détail d'implémentation à vérifier. Tout comme le fait de transformer une valeur est à tester :wink:.
 
 Il est également et finalement nécessaire d'effectuer des *vérifications* sur nos mocks concernant les valeurs des paramètres passés aux méthodes des dépendances de notre SUT.
 
-```
+```java
 verify(repository).findById("id");
 verifyNoMoreInteractions(repository);
 ```
@@ -118,7 +129,7 @@ verifyNoMoreInteractions(repository);
 
 Je vous conseillerai de les utiliser lorsque vous faites du stubbing, pour se faciliter la vie. Soyez plus ou moins précis selon les différents stubbings appliqués au mock, **mais n'utilisez jamais les matchers pour les vérifications** : c'est le but même de l'approche de vérifier les valeurs passées.
 
-```
+```java
 when(repository.findById(any())).thenReturn(Optional.of(sampleLandingPad)); ✅
 when(repository.findById(eq("id"))).thenReturn(Optional.of(sampleLandingPad)); ✅
 when(repository.findById("id")).thenReturn(Optional.of(sampleLandingPad)); ✅
@@ -129,7 +140,7 @@ verify(repository).findById(any()); ❌
 ```
 
 **Lorsque notre SUT est utilisable sans Spring, il est intéressant de se demander si configurer notre test pour utiliser Spring est judicieux**. Le test de notre service n'a besoin que du support de Mockito pour fonctionner :
-```
+```java
 @ExtendWith(MockitoExtension.class)
 class RepositoryBasedLandingpadsServiceShould {
 
@@ -146,7 +157,7 @@ De plus, une méthode de contrôleur possède de la configuration spécifique à
 
 L'initialisation d'un test avec Spring étant plus lourde, nous allons configurer notre test unitaire afin que le contexte d'application ne contienne que [le strict nécessaire à l'exécution de celui-ci](https://developer.okta.com/blog/2021/07/12/spring-boot-test-slices#when-to-avoid-springboottest-annotation), pour un cas d'usage Web : grâce aux test slices de Spring Boot, apposer [`@WebMvcTest`](https://developer.okta.com/blog/2021/07/12/spring-boot-test-slices#test-controllers-with-webmvctest) sur la classe de test nous permet de configurer automatiquement, et obtenir dans nos tests une instance d'un `MockMvc`  qui nous servira à simuler des requetes HTTP et vérifier les réponses que fournira notre contrôleur.
 
-```
+```java
 @WebMvcTest
 class LandingpadsControllerShould {
 
@@ -164,7 +175,7 @@ Le booléen passé en second paramètre dans notre exemple sert à activer le mo
 
 Vous connaissez l'adage : ["There are only two hard things in Computer Science..."](https://martinfowler.com/bliki/TwoHardThings.html). Nommer ses tests clairement et de façon concise est primordial : utiliser la syntaxe en "should" permet de créer un préfixe commun à nos tests qui vont tous vérifier un prérequis, et le nom de la méthode de test doit clairement expliciter le comportement attendu ainsi que les conditions qui amèneront à ce comportement, s'il y en a.
 
-```
+```java
 class RepositoryBasedLandingpadsServiceShould {
 
     // Pas de conditions, on ne l'indique pas
